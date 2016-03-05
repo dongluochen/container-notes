@@ -2,15 +2,15 @@
 
 Use Docker-in-Docker(dind) and multi-host overlay network to create Swarm clusters with hundreds of dind nodes.
 
-Swarm is designed to manage clusters with hundreds of nodes. It's expensive to run such tests with hundreds of nodes from cloud provider. This project is to create hundreds of dind nodes from a few EC2 instances. It first creates a Swarm cluster (Ring1) with a few EC2 instances; adds a CIDR /16 overlay network (ring2net); then creates a swarm cluster (Ring2) on ring2net; next adds docker instances to Ring2 through Ring1. Ring2 can reach hundreds of nodes with overlay network capability. We want to create scripts to facilitate this procedure.
+Swarm is designed to manage clusters with hundreds of nodes. It's expensive to run such tests with hundreds of nodes from cloud provider. This project is to create hundreds of dind nodes from a few EC2 instances. It first creates a Swarm cluster (swarm1) with a few EC2 instances; adds a CIDR /16 overlay network (ring2net); then creates a swarm cluster (swarm2) on ring2net; next adds docker instances to swarm2 through swarm1. Swarm2 can reach hundreds of nodes with overlay network capability. We want to create scripts to facilitate this procedure.
 
 ![Swarm in Swarm architecture](https://github.com/dongluochen/container-notes/blob/master/swarm-in-swarm.png)
 
-This project is inspired by Docker Swarm integration test where dind is used to create swarm cluster for test. 
+This project is inspired by Docker Swarm integration test where dind is used to create swarm cluster for test. It's useful to stress swarm manager or K/V store, and examine system failure.
 
 #Start swarm1
 
-Get nodes from cloud provider. Here we use AWS EC2 as example. Create a VPC and opne network ports for external access and overlay network. The hostname of the nodes are `dong-wily-k` where we use Ubuntu Wily images. 
+Get nodes from cloud provider. Here we use AWS EC2 as example. Images and volumes in Dind are not shared with host. Each Dind instance would may take some disk space from host. Nodes need larger storage space like 40GB for this experiment. Create a VPC and open network ports for external access and overlay network. In this example the hostnames of the EC2 instances are `dong-wily-k` where we use Ubuntu Wily images.
 
 Select a node to start a discovery. Here we use consul as example. 
 ```bash
@@ -75,7 +75,9 @@ Name: 605bd1b4fbde
 
 #Start Swarm 2
 
-Create overlay network 'ring2net' 
+Note that swarm2 is created thru swarm1. K/V store, swarm manager, dind instances are created on a same overlay network `ring2net`. Here the swarm1 interface is `dong-wily-1:2378`.
+
+Create overlay network `ring2net`.
 
 ```
 docker -H dong-wily-1:2378 network create -d overlay --subnet=10.9.0.0/16 ring2net
@@ -83,33 +85,33 @@ ubuntu@ip-172-19-29-201:/$ docker -H dong-wily-1:2378 network inspect ring2net |
                     "Subnet": "10.9.0.0/16"
 ```
 
-Start consul on layer2 network thru swarm
+Start consul on ring2net network
 
 ```
 ubuntu@ip-172-19-29-201:/$ docker -H dong-wily-1:2378 run -d --name=consul-ring2 --net=ring2net progrium/consul -server -bootstrap
 0aea5a87f78ab52942e33e827e07ad200a56e505cc06a70de7a92ee0628d7e1f
 ```
 
-Start a swarm manager in layer2
+Start a swarm manager on ring2net. The manager is exposed on port 2398 of its host. You can add node constraint to pin the manager to a specific machine.
 
 ```
 ubuntu@ip-172-19-29-201:/$ docker -H dong-wily-1:2378 run -d -p 2398:2398 --net=ring2net --name=manager-ring2 swarm -l debug manage -H :2398 consul://10.9.0.2:8500/swarm 
 da5b45a6529c37172ce0e7596dc3ae5aa6aeaf264bfec762c2aeea1e06a0417c
 ```
 
-Start dind thru swarm 
+Start dind thru swarm1
 ```
 ubuntu@ip-172-19-29-201:/$ docker -H dong-wily-1:2378 run --net=ring2net --name=node1-ring2 -h "node1-ring2" --privileged -e constraint:node==ip-172-19-9-45 -d docker:dind --cluster-store=consul://10.9.0.2:8500/swarm --cluster-advertise=eth0:2375
 04c960ccec250069e70009964188af71e24b47886b2c346ae86a04bc38324f0a
 ```
 
-Add nodes to swarm at layer2
+Add nodes to swarm at ring2net
 ```
-ubuntu@ip-172-19-108-80:~$ docker -H dong-wily-1:2378 run -d --net=layer2 --name=join3-layer2 swarm join --addr=node3-layer2:2375 consul://10.0.0.2:8500/swarm
+ubuntu@ip-172-19-108-80:~$ docker -H dong-wily-1:2378 run -d --net=ring2net --name=join3-ring2net swarm join --addr=node1-ring2:2375 consul://10.0.0.2:8500/swarm
 ee3d988dd28a5d3bd79dc7cbf729e4015a76270134dead2afbb7ddb5d0031e60
 ```
 
-Use script to add nodes to swarm2. 
+Use script to repeat the previous 2 steps to add nodes to swarm2.
 ```
 ubuntu@ip-172-19-108-80:~$ docker -H dong-wily-1:2398 info 
 Containers: 4
@@ -140,3 +142,11 @@ Nodes: 148
   └ UpdatedAt: 2016-03-03T22:44:23Z
 …
 ```
+
+Now you have swarm2 with large nubmer of nodes.
+
+#Notes
+
+Consul becomes a bottleneck in a large cluster where it may not be able to handle the load. You can put consul in a node with plenty of resource.
+
+Monitor disk space at your nodes.
