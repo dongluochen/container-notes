@@ -4,7 +4,7 @@ Use Docker-in-Docker(dind) and multi-host overlay network to create Swarm cluste
 
 Swarm is designed to manage clusters with hundreds of nodes. It's expensive to run such tests with hundreds of nodes from cloud provider. This project is to create hundreds of dind nodes from a few EC2 instances. It first creates a Swarm cluster (swarm1) with a few EC2 instances; adds a CIDR /16 overlay network (ring2net); then creates a swarm cluster (swarm2) on ring2net; next adds docker instances to swarm2 through swarm1. Swarm2 can reach hundreds of nodes with overlay network capability. We want to create scripts to facilitate this procedure.
 
-![Swarm in Swarm architecture](https://github.com/dongluochen/container-notes/blob/master/swarm-in-swarm.png)
+![Swarm in Swarm architecture](https://github.com/dongluochen/container-notes/blob/master/Swarm-in-Swarm/swarm-in-swarm.png)
 
 This project is inspired by Docker Swarm integration test where dind is used to create swarm cluster for test. It's useful to stress swarm manager or K/V store, and examine system failure.
 
