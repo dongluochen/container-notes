@@ -4,13 +4,13 @@ This doc describes the steps to set up a Swarm cluster in Microsoft Azure cloud.
 
 ##Start a Swarm cluster in Azure
 
-Microsoft has made Azure template for [Swarm cluster](https://github.com/Azure/azure-quickstart-templates/tree/master/docker-swarm-cluster). It uses `Consul` as discovery backend, supports high availability with multiple manager, and deploys CoreOS as host operating system for managers and nodes. The following link is from the github template.
+Microsoft has built [Azure template]((https://github.com/Azure/azure-quickstart-templates/tree/master/docker-swarm-cluster) to deploy Docker Swarm cluster. It uses `Consul` as discovery backend, supports high availability with multiple managers, and deploys CoreOS as host operating system for managers and nodes. The template would create a cluster like the following (diagram from Azure template).
 
 ![Azure template](https://github.com/Azure/azure-quickstart-templates/blob/master/docker-swarm-cluster/img/cluster-network.png)
 
-There are 2 ways to deploy a Swarm cluster using the template. The template provides a `Deploy to Azure` link to start the work on Azure Portal. Ahmet Alp BAlkan has created a [video clip](https://channel9.msdn.com/Blogs/Regular-IT-Guy/Docker-Swarm-Clusters-on-Azure) on Channel 9 to demonstrate how to use the template. Alternatively users can do the same task with [Azure CLI](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-command-line-tools/). The commands are basically direct mapping from Portal operations. 
+There are 2 ways to deploy a Swarm cluster using the template. The template github document provides a `Deploy to Azure` link to start the work on Azure Portal. [Ahmet Alp BAlkan](https://channel9.msdn.com/Niners/ahmetalpbalkan) has created a [video clip](https://channel9.msdn.com/Blogs/Regular-IT-Guy/Docker-Swarm-Clusters-on-Azure) on Channel 9 to demonstrate how to use the template. Alternatively users can do the same task with [Azure CLI](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-command-line-tools/). The commands are direct mapping from Portal operations.
 
-When you finish the deployment, use the SSH tunnel to connect to your swarm cluster. You can SSH into your Swarm managers or nodes to inspect or upgrade them. 
+When you finish the deployment, use the SSH tunnel to connect to your swarm cluster. You can also SSH into your Swarm managers or nodes to inspect or upgrade them.
 
 ```
 Dongluos-MacBook-Pro:.ssh dongluochen$ docker info
@@ -74,10 +74,9 @@ Add a Windows Server 2012R2 to Swarm manager network. Login the server through R
 
 ```
 netsh advfirewall firewall add rule name="docker swarm" dir=in action=allow protocol=tcp localport=2375 enable=yes
-
 ```
 
-You can run Windows Swarm manager in standalone mode. Here we add it to the existing HA manager list. Copy swarm.exe binary to the Windows server (10.0.0.8). The command to start a Windows manager is the same as other servers. 
+You can run Windows Swarm manager in standalone mode. Here we add it to the existing HA manager list. Copy swarm.exe binary to the Windows server (10.0.0.8). The command to start a Windows manager is the same as other servers. It registers the worker nodes base on discovery from Consul.
 
 ```
 PS C:\Users\dchen> .\swarm.exe -l debug manage -H 0.0.0.0:2375 --replication --advertise 10.0.0.8:2375 -discovery-opt kv.path=docker/nodes consul://10.0.0.4:8500
@@ -160,12 +159,10 @@ This message shows that your installation appears to be working correctly.
 Windows Server 2016 Technical Preview 4 supports Docker daemon. In your Azure resource group, add a new Windows Server by selecting 'Windows Server 2016 Core with Container Tech Perview 4' and put it in `subnet-nodes`. 
 
 When the node is provisioned, you can connect to it through RDP session. Open firewall ports for Docker daemon and overlay network. 
-
 ```
 Netsh advfirewall firewall add rule name="docker daemon 1" dir=in action=allow protocol=tcp localport=2375,7946 enable=yes
 
 Netsh advfirewall firewall add rule name="docker daemon 2" dir=in action=allow protocol=udp localport=4789,7946 enable=yes
-
 ```
 
 Start Docker daemon on the server. `docker.exe` is already added at `C:\Windows\System32`.
@@ -173,10 +170,9 @@ Start Docker daemon on the server. `docker.exe` is already added at `C:\Windows\
 
 ```
 C:\windows\system32>docker.exe daemon -H 0.0.0.0:2375 --cluster-store=10.0.0.4:8500 --cluster-advertise=192.168.0.8:2375 
-
 ```
 
-The new Windows node shows up in Swarm cluster. 
+The new Windows node `docker-tp4-2` shows up in Swarm cluster.
 
 ```
 azureuser@swarm-master-0 ~ $ docker -H swarm-master-1:2375 info
@@ -224,5 +220,3 @@ CPUs: 10
 Total Memory: 21.48 GiB
 Name: dfe6ec556ea6
 ```
-
-
