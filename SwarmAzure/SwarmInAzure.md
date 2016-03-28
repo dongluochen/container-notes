@@ -48,7 +48,7 @@ Nodes: 4
 CPUs: 8
 Total Memory: 14.13 GiB
 Name: 2176d1c1eeb0
-``
+```
 
 ## Add a Windows Swarm Manager
 
@@ -87,14 +87,10 @@ time="2016-03-28T19:52:50Z" level=debug msg="Watch triggered with 5 nodes" disco
 time="2016-03-28T19:52:50Z" level=info msg="Leader Election: Cluster leadership lost"
 time="2016-03-28T19:52:50Z" level=info msg="New leader elected: 10.0.0.5:2375"
 time="2016-03-28T19:52:50Z" level=debug msg="Watch triggered with 5 nodes" discovery=consul
-time="2016-03-28T19:52:50Z" level=debug msg="Start monitoring events" id="OGHH:UEJW:OQBG:ONYD:H43W:DZ6E:SQ7T:2HZA:2DSA:6
-BSR:VCLJ:4JQF" name=swarm-node-0
-time="2016-03-28T19:52:50Z" level=debug msg="Start monitoring events" id="KKTD:SWE7:FO24:JX2Z:3Z2P:KTSO:MIPA:F2DQ:5E4R:3
-XWZ:BDFF:WSIJ" name=swarm-node-1
-time="2016-03-28T19:52:50Z" level=debug msg="Start monitoring events" id="PIYJ:OJ3Q:KHRN:DZUC:5YLF:5WVL:NSMR:7R4X:K5LW:E
-DPS:GBFU:XXOJ" name=swarm-node-3
-time="2016-03-28T19:52:50Z" level=debug msg="Start monitoring events" id="22LT:NHK7:IYFW:Z634:2VNM:HKP2:6CLU:XAGO:Y55U:Q
-ZIZ:4WS3:B66R" name=swarm-node-2
+time="2016-03-28T19:52:50Z" level=debug msg="Start monitoring events" id="OGHH:UEJW:OQBG:ONYD:H43W:DZ6E:SQ7T:2HZA:2DSA:6BSR:VCLJ:4JQF" name=swarm-node-0
+time="2016-03-28T19:52:50Z" level=debug msg="Start monitoring events" id="KKTD:SWE7:FO24:JX2Z:3Z2P:KTSO:MIPA:F2DQ:5E4R:3XWZ:BDFF:WSIJ" name=swarm-node-1
+time="2016-03-28T19:52:50Z" level=debug msg="Start monitoring events" id="PIYJ:OJ3Q:KHRN:DZUC:5YLF:5WVL:NSMR:7R4X:K5LW:EDPS:GBFU:XXOJ" name=swarm-node-3
+time="2016-03-28T19:52:50Z" level=debug msg="Start monitoring events" id="22LT:NHK7:IYFW:Z634:2VNM:HKP2:6CLU:XAGO:Y55U:QZIZ:4WS3:B66R" name=swarm-node-2
 time="2016-03-28T19:52:50Z" level=info msg="Registered Engine swarm-node-0 at 192.168.0.5:2375"
 time="2016-03-28T19:52:50Z" level=info msg="Registered Engine swarm-node-2 at 192.168.0.4:2375"
 time="2016-03-28T19:52:50Z" level=info msg="Registered Engine swarm-node-3 at 192.168.0.7:2375"
