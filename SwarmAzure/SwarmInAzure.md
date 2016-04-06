@@ -220,3 +220,36 @@ CPUs: 10
 Total Memory: 21.48 GiB
 Name: dfe6ec556ea6
 ```
+
+Run a Windows container.
+
+```
+azureuser@swarm-master-0 ~ $ docker  -H swarm-master-1:2375 images
+REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+nginx               latest              6f62f48c4e55        3 weeks ago         190.5 MB
+windowsservercore   10.0.10586.0        6801d964fda5        5 months ago        0 B
+windowsservercore   latest              6801d964fda5        5 months ago        0 B
+
+azureuser@swarm-master-0 ~ $ docker -H swarm-master-1:2375 run  windowsservercore tasklist
+
+Image Name                     PID Session Name        Session#    Mem Usage
+========================= ======== ================ =========== ============
+System Idle Process              0                            0          4 K
+System                           4                            0        136 K
+smss.exe                      3420                            0      1,132 K
+csrss.exe                     3288 Services                   3      3,728 K
+wininit.exe                   1000 Services                   3      4,672 K
+services.exe                  3200 Services                   3      5,388 K
+lsass.exe                     3052 Services                   3      8,988 K
+svchost.exe                   3904 Services                   3      8,288 K
+svchost.exe                   4064 Services                   3      6,316 K
+svchost.exe                   1392 Services                   3      9,880 K
+svchost.exe                   2656 Services                   3      9,272 K
+svchost.exe                   4000 Services                   3     10,100 K
+svchost.exe                   3300 Services                   3     14,044 K
+svchost.exe                    552 Services                   3     26,084 K
+svchost.exe                   2468 Services                   3      4,668 K
+CExecSvc.exe                   860 Services                   3      4,452 K
+tasklist.exe                  3852 Services                   3      6,764 K
+WmiPrvSE.exe                  3012 Services                   3      7,648 K
+```
