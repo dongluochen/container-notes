@@ -11,7 +11,7 @@ my $name = "$ENV{HOSTNAME}-instance";
 #my $PORT = $ENV{PORT};
 #my $DOCKER_RUN = $ENV{DOCKER_RUN};
 
-# Trap TERM/INT from the proxy container 
+# Trap TERM/INT from the proxy container
 # in order to stop our instance container
 $SIG{INT} = \&stopper;
 $SIG{TERM} = \&stopper;

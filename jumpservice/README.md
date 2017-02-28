@@ -1,24 +1,24 @@
-Jumpservice is to work around lack of security capability profile in Docker Swarm. 
+Jumpservice is to work around lack of security capability profile in Docker Swarm.
 "startup" is derived from github.com/calh/docker_priv_proxy. The following document
-is from docker_priv_proxy. It's meant for temporary usage. 
+is from docker_priv_proxy. It's meant for temporary usage.
 
 # Docker Privileged Proxy
 
 This image is a wrapper / proxy intended to workaround the limitation
 of --cap-add in Docker Swarm Mode services.  (Which doesn't exist yet,
- watch [this GH issue](https://github.com/docker/docker/issues/24862) 
+ watch [this GH issue](https://github.com/docker/docker/issues/24862)
 if you're interested )
 
-Many images need `--privileged` mode, or some form of it using 
+Many images need `--privileged` mode, or some form of it using
 parameters like `--device`, `--ipc`, `--net`, or `--cap-add`.
 
 This image is a very simple debian image that binds the docker socket
-from the host, then fires up a container using `docker run`.  
+from the host, then fires up a container using `docker run`.
 
 socat is used to proxy the privileged container's port using a swarm overlay network.
 
 NOTE:  This requires docker engine 1.13 for attachable networks, and is currently in testing.
-This could hypothetically be replaced with --link on older Docker versions, but 
+This could hypothetically be replaced with --link on older Docker versions, but
 I haven't cared to do this.
 
 ## Building
@@ -27,7 +27,7 @@ I haven't cared to do this.
 
 ## Example Usage
 
-The primary reason I needed this functionality was for DB2 testing/staging setups.  
+The primary reason I needed this functionality was for DB2 testing/staging setups.
 Here's a real live demo you can try out.
 
 First, create an overlay network with --attachable so that the container
@@ -36,7 +36,7 @@ created with `docker run` can be accessed from the proxy service
 `docker network create -d overlay --attachable --subnet 10.1.1.0/24 db2_net`
 
 Next, create the `db2_proxy` swarm service.  The `DOCKER_RUN` variable
-can have any parameters that `docker run` would accept.  
+can have any parameters that `docker run` would accept.
 
 ```
 docker service create \
